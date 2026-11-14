@@ -1,0 +1,98 @@
+<!doctype html>
+<html lang="en"><head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Desk"><meta name="theme-color" content="#000000">
+<meta name="referrer" content="no-referrer">
+<title>Desk</title>
+<link rel="manifest" href="manifest.json"><link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<link rel="stylesheet" href="app.css">
+</head><body>
+<svg width="0" height="0" style="position:absolute"><defs>
+<symbol id="i-home" viewBox="0 0 24 24"><path d="M3 11l9-8 9 8v9a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"/></symbol>
+<symbol id="i-agents" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="6" rx="2"/><rect x="3" y="14" width="18" height="6" rx="2"/></symbol>
+<symbol id="i-activity" viewBox="0 0 24 24"><path d="M3 12h4l3 8 4-16 3 8h4"/></symbol>
+<symbol id="i-account" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></symbol>
+<symbol id="i-search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/></symbol>
+<symbol id="i-bell" viewBox="0 0 24 24"><path d="M6 16V11a6 6 0 0 1 12 0v5l2 2H4zM10 21h4"/></symbol>
+</defs></svg>
+
+<div id="lock" class="screen hidden"><div class="lock">
+  <h1 style="font:700 28px var(--display)">Desk is locked</h1>
+  <p class="sec">Open your desk link once on this device. If you added Desk to the home screen, paste the link here
+  (the home-screen app keeps its own storage).</p>
+  <textarea id="lockin" placeholder="Paste your desk link" autocomplete="off" autocapitalize="off" spellcheck="false"></textarea>
+  <button id="lockgo" class="cta">Unlock</button>
+</div></div>
+
+<!-- HOME -->
+<section id="home" class="screen tab">
+  <div class="nav">
+    <button class="tap" data-go="account" aria-label="Account"><span class="avatar" id="avatar">·</span></button>
+    <button class="who" data-go="account">Grok Bot ›</button>
+    <button class="tap" id="openSearch" aria-label="Search"><svg class="icon"><use href="#i-search"/></svg></button>
+    <button class="tap bell" id="openBell" aria-label="Pushes"><svg class="icon"><use href="#i-bell"/></svg><i class="dot hidden" id="bellDot"></i></button>
+  </div>
+  <div class="err hidden"></div>
+  <div class="ld">
+    <div class="sk" style="height:66px;width:70%;margin-top:8px"></div><div class="sk" style="height:20px;width:40%;margin-top:10px"></div>
+    <div class="sk" style="height:240px;margin-top:12px"></div><div class="sk" style="height:44px;margin-top:8px"></div>
+    <div class="sk" style="height:28px;width:50%;margin-top:24px"></div><div class="sk" style="aspect-ratio:504/470;margin-top:10px;border-radius:calc((100vw - 32px) * 42 / 504)"></div>
+  </div>
+  <div class="ok hidden">
+    <div class="bal"><span class="odo num" id="odo" aria-live="polite"></span><span class="pill paper" id="paperHome">PAPER</span></div>
+    <div class="today"><span id="todayPct" class="num"></span><span class="pill mult num" id="mult"></span></div>
+    <div id="guardBanner" class="guard hidden"></div>
+    <div class="chartbox"><canvas id="lineChart"></canvas><div class="chart-empty hidden" id="chartEmpty">Waiting for the first trade</div></div>
+    <div class="ranges" id="ranges"></div>
+    <div class="sh"><span id="agentsHead">Agents</span></div>
+    <div class="carousel" id="carousel"></div>
+    <div class="sh"><span>Activity</span><button data-go="activity">See all</button></div>
+    <div class="list" id="homeActivity"></div>
+  </div>
+</section>
+
+<!-- AGENTS -->
+<section id="agents" class="screen tab hidden">
+  <div class="nav"><h1>Agents</h1><span class="pill paper modepill">PAPER</span></div><div class="err hidden"></div>
+  <div class="ld"><div class="sk" style="height:220px"></div><div class="sk" style="height:220px;margin-top:12px"></div></div>
+  <div class="ok hidden" id="agentsList"></div>
+</section>
+
+<!-- ACTIVITY -->
+<section id="activity" class="screen tab hidden">
+  <div class="nav"><h1>Activity</h1><span class="pill paper modepill">PAPER</span></div><div class="err hidden"></div>
+  <div class="ld"><div class="sk" style="height:60px"></div><div class="sk" style="height:60px;margin-top:8px"></div><div class="sk" style="height:60px;margin-top:8px"></div></div>
+  <div class="ok hidden"><div class="list" id="activityList"></div><button class="more hidden" id="activityMore">Show more</button></div>
+</section>
+
+<!-- ACCOUNT -->
+<section id="account" class="screen tab hidden">
+  <div class="nav"><h1>Account</h1><span class="pill paper modepill">PAPER</span></div><div class="err hidden"></div>
+  <div class="ld"><div class="sk" style="height:120px"></div><div class="sk" style="height:300px;margin-top:12px"></div></div>
+  <div class="ok hidden" id="accountBody"></div>
+</section>
+
+<!-- SHEETS -->
+<section id="coin" class="sheet hidden"></section>
+<section id="audit" class="sheet hidden"></section>
+<section id="searchSheet" class="sheet hidden">
+  <div class="nav"><button class="tap back" data-close>‹ Back</button></div>
+  <input id="searchIn" class="search" type="search" placeholder="Name, symbol or mint" autocomplete="off" autocapitalize="off" spellcheck="false">
+  <div class="list" id="searchOut"></div>
+</section>
+<section id="bellSheet" class="sheet hidden">
+  <div class="nav"><button class="tap back" data-close>‹ Back</button><h1>Pushes</h1><span class="pill paper modepill">PAPER</span></div>
+  <div class="list" id="bellOut"></div>
+</section>
+
+<nav class="tabs" id="tabs">
+  <button data-go="home" class="on"><svg class="icon"><use href="#i-home"/></svg>Home</button>
+  <button data-go="agents"><svg class="icon"><use href="#i-agents"/></svg>Agents</button>
+  <button data-go="activity"><svg class="icon"><use href="#i-activity"/></svg>Activity</button>
+  <button data-go="account"><svg class="icon"><use href="#i-account"/></svg>Account</button>
+</nav>
+<script src="desk-crypto.js"></script><script src="chart.js"></script><script src="app.js"></script>
+</body></html>
